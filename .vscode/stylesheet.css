@@ -1,0 +1,28 @@
+*{
+    font-size: larger;
+}
+body{
+    text-align: center;
+    background-color:bisque;
+
+}
+.buttons{
+    background-color: black;
+}
+.arrows{
+    transform: rotate(90deg);
+    
+}
+#one{
+    color: red;
+    
+}
+table{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+#two{
+    
+}
+
