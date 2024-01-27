@@ -5,7 +5,7 @@ import random
 from settings import *
 from datetime import date
 
-
+#region Functions
 def generate_password():
     lower = 'abcdefghijklmnopqrstuvwxyz'
     upper = lower.upper()
@@ -15,10 +15,11 @@ def generate_password():
     new_password = "".join(random.sample(all_together, pass_length))
     return new_password
 
+#endregion
+
 def handle_client(client_socket):
-    # Code to handle a specific client
     request = client_socket.recv(SERVER_BUFFER_SIZE)
-    print(f"Received from {client_socket.getpeername()}: {request.decode()}")
+    print(f"Received from {client_socket}: {request.decode()}")
 
     # You can add more logic here to process the request
 
@@ -41,24 +42,24 @@ def main():
     client_sockets = []
 
     while True:
-        rlist, wlist, elist = select.select([server_socket]+client_sockets, client_sockets, [])
+        rlist, wlist, elist = select.select([server_socket] + client_sockets, client_sockets, [])
         
         for current_socket in rlist:
             if current_socket is server_socket:
                 client_conn, client_addr = server_socket.accept()
-                print(f"Accepted connection from {client_addr}")
-                rlist.append(client_conn)
+                print(f"{client_addr} just joined!")
+                client_sockets.append(client_conn)
             else:
-                # Existing client has data
-                data = current_socket.recv(1024)
-                print(data.decode())
-                if data:
-                    handle_client(current_socket)
-                else:
-                    # No data, client closed the connection
-                    print(f"Connection from {current_socket.getpeername()} closed.")
-                    rlist.remove(current_socket)
+                client_data = current_socket.recv(SERVER_BUFFER_SIZE)
+                print(f'BEBUG: {client_data.decode()}')
+                if client_data == b'exit':
+                    print(f'closing connection with {current_socket}')
+                    client_sockets.remove(current_socket)
+                    wlist.remove(current_socket)
                     current_socket.close()
+                    break
+                else:
+                    print('good job')
 
 
 if __name__ == "__main__":

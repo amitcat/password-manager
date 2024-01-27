@@ -4,23 +4,36 @@ from settings import *
 
 MY_IP = '127.0.0.1'
 
-def send_data(client):
-    message = input('message>>>')
-    client.send(message.encode())
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((MY_IP, SERVER_PORT))
 
-    # Receive and print the server's response
-    response = client.recv(1024)
-    print(f"Received from server: {response.decode()}")
-    
-    # client.close()
+def client_send():
+    while True:
+        message = input(f'>>>>')
+        client.send(message.encode())
+        if message== 'exit':
+            print('bye bye')
+            client.close()
+            break
+
+def client_recive():
+    while True:
+        try:
+            message = client.recv(SERVER_BUFFER_SIZE).decode()
+            print (message)
+        except:
+            print('error')
+            client.close()
+            break
 
 def main():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((MY_IP, SERVER_PORT))
-    
-    client_thread = threading.Thread(target=send_data, args=(client,))
-    client_thread.start()
+   
 
+    send_thread = threading.Thread(target=client_send)
+    send_thread.start()
+
+    # receive_thread = threading.Thread(target=client_recive)
+    # receive_thread.start()
 
 if __name__ == "__main__":
     main()

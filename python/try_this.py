@@ -1,8 +1,9 @@
 from datetime import date
 import sqlite3
 from sqlite3 import Error
+from try_something import *
 
-name = "from new page" #getting name fron user
+name = username_entry.get() #getting name fron user
 age = 25 # getting age from user
 gender = "male" #getting name fron user
 nationality = "IL" #getting name fron user

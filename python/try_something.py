@@ -30,14 +30,17 @@ def checkInput():
     usernm = "Username301"  # username from DataBase (the first table)
     pswrd = "Passw0rd"  # password for this username (the first table)
     entered_usernm = username_entry.get()  # get username from Entry widget
+    print (username_entry.get())
     entered_pswrd = password_entry.get()  # get password from Entry widget
+    print("Hello!")
+    root.destroy()
 
-    if (usernm == entered_usernm) and (pswrd == entered_pswrd):
-        print("Hello!")
-        root.destroy()
+    # if (usernm == entered_usernm) and (pswrd == entered_pswrd):
+    #     print("Hello!")
+    #     root.destroy()
 
-    else:
-        print("Login failed: Invalid username or password.")
+    # else:
+    #     print("Login failed: Invalid username or password.")
 
 
 def toggled():
@@ -54,6 +57,7 @@ Label(username_frame, text="Username", bg="#6FAFE7").pack(side='left', padx=5)
 
 username_entry = Entry(username_frame, bd=3)
 username_entry.pack(side='right')
+
 
 # Password entry
 password_frame = Frame(root, bg="#6FAFE7")
