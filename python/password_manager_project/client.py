@@ -1,6 +1,7 @@
 import socket
 import threading
 from settings import *
+from client_gui import *
 
 MY_IP = '127.0.0.1'
 
@@ -27,13 +28,13 @@ def client_recive():
             break
 
 def main():
-   
-
     send_thread = threading.Thread(target=client_send)
     send_thread.start()
 
-    # receive_thread = threading.Thread(target=client_recive)
-    # receive_thread.start()
 
 if __name__ == "__main__":
-    main()
+    #לקרוא לפעולות מהגוי
+    current_client = Client_gui()
+    #לוקח מידע מהעצם
+    current_client.run()
+    main() #מעביר כפרמטר את המידע הנחוץ
