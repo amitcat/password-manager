@@ -12,9 +12,11 @@ def first():
     def signin():
         username = user.get()
         password = pword.get()
+        # print(username + ' ' +password)
         if username == 'amit' and password =='hi':
             messagebox.showinfo("login", 'you are now signed in')
             root.destroy()
+            return username + ' ' + password
             second()
         else:
             messagebox.showerror('login' , 'your username or password was incorect')
@@ -63,10 +65,12 @@ def first():
     pword.bind('<FocusIn>', on_enter_pass)
     pword.bind('<FocusOut>', on_leave_pass)
 
+    print(f'{user.get()} {pword.get()}')
+
     Frame(frame,width=295, height=2, bg='black').place(x=25,y=177)
 
-    Button(frame,width=39, pady=7, text='Sign in', bg='#57a1f8', fg='white', border=0, command=signin).place(x=35,y=204)
-
+    x = Button(frame,width=39, pady=7, text='Sign in', bg='#57a1f8', fg='white', border=0, command=signin).place(x=35,y=204)
+    print(f'{x}')
 
 
 

@@ -1,15 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
-class Client_gui():
+class Client_gui:
     def __init__(self) -> None:
-        user = ''
-        pword = ''
+        self.user = ''
+        self.pword = ''
+
 
     def run(self):
         self.log_in_screen()
 
     def log_in_screen(self):
-
         root=Tk()
         root.title('Log in')
         root.geometry('925x500+300+200')
@@ -17,18 +17,19 @@ class Client_gui():
         root.resizable(False,False)
 
         def signin():
-            username = user.get()
-            password = pword.get()
-            if username == 'amit' and password =='hi':
-                messagebox.showinfo("login", 'you are now signed in')
-                root.destroy()
-                #בדיקה של המשתמש: קיים בטבלה- ממשיך הלאה/לא קיים בטבלה- נכנס לטבלה, ממשיך הלאה
-                self.main_screen()
-            else:
+            self.user = user.get()
+            self.pword = pword.get()
+            #בדיקה של משתמש
+            if self.user == None or self.pword ==None: #קיים בטבלה- ממשיך הלאה
                 messagebox.showerror('login' , 'your username or password was incorect')
 
-        def check_info_and_DB (self):
-            pass
+            else: #לא קיים בטבלה- מכניס לטבלה וממשיך הלאה
+                messagebox.showinfo("login", 'you are now signed in')
+                root.destroy()
+                # self.main_screen()
+
+        # def check_info_and_DB (self):
+        #     pass
 
         img_src = r"C:\Users\amitk\OneDrive\Desktop\all\python\password_manager_project\images\login.png"
         img = PhotoImage(file= img_src)
@@ -72,17 +73,28 @@ class Client_gui():
         pword.insert(0,'Password')
         pword.bind('<FocusIn>', on_enter_pass)
         pword.bind('<FocusOut>', on_leave_pass)
+
+       
         
         Frame(frame,width=295, height=2, bg='black').place(x=25,y=177)
-
         Button(frame,width=39, pady=7, text='Sign in', bg='#57a1f8', fg='white', border=0 , command=signin).place(x=35,y=204)
+        string_name = str(self.user)
+        string_password = str(self.pword)
+
+        def get_uname_and_pass():
+            return f'{string_name} {string_password}'
+
 
 
 
 
         root.mainloop()
+        return get_uname_and_pass()
+    
+    # def get_all(self):
+    #     return f'{self.user} {self.pword}'
 
-    def main_screen(self):
+    def menu_page(self):
         root=Tk()
         root.title('Log in')
         root.geometry('925x500+300+200')
@@ -90,3 +102,4 @@ class Client_gui():
         root.resizable(False,False)
 
         root.mainloop()
+

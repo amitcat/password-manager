@@ -3,7 +3,6 @@ from sqlite3 import Error
 from datetime import date
 
 
-
 def create_connection(path):
     connection = None
     try:

@@ -5,7 +5,7 @@ import random
 from settings import *
 from datetime import date
 
-#region Functions
+
 def generate_password():
     lower = 'abcdefghijklmnopqrstuvwxyz'
     upper = lower.upper()
@@ -15,7 +15,6 @@ def generate_password():
     new_password = "".join(random.sample(all_together, pass_length))
     return new_password
 
-#endregion
 
 def handle_client(client_socket):
     request = client_socket.recv(SERVER_BUFFER_SIZE)
@@ -30,6 +29,8 @@ def handle_client(client_socket):
     # Close the client socket
     if request=='quit':
         client_socket.close()
+
+# def get_all_users_fromDB (uname, password):
 
 
 def main():
@@ -52,7 +53,7 @@ def main():
             else:
                 client_data = current_socket.recv(SERVER_BUFFER_SIZE)
                 print(f'BEBUG: {client_data.decode()}')
-                if client_data == b'exit':
+                if client_data == b'exit' or client_data == b'':
                     print(f'closing connection with {current_socket}')
                     client_sockets.remove(current_socket)
                     wlist.remove(current_socket)
