@@ -1,27 +1,52 @@
-import socket, threading
-from threading import Thread
+import socket
+import threading
 from settings import *
-from client_gui import *
-import hashlib
 
-class Client():
-    def __init__(self) -> None:
-        self.MY_IP = '127.0.0.1'
+
+
+class MultiThreadedClient(threading.Thread):
+    def __init__(self, host, port):
+        super().__init__()
+        self.host = host
+        self.port = port
+        self.username = ""
+        self.messages = []
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect((self.MY_IP, SERVER_PORT))
-        self.gui = Client_gui()
+        self.stop_flag = threading.Event() # Event to signal thread termination
+    
+    def run(self):
+        client_thread = threading.Thread(target=self.connect)
+        client_thread.start()
 
-    def signin(self):
-        self.gui.log_in_screen()
-        password = bytes(self.gui.pword, 'utf-8')
-        hash_password = hashlib.sha256(password).hexdigest()
-        unername_password = f'{self.gui.user}:{hash_password}'
-        print(unername_password)
-        self.client_socket.send(unername_password.encode())
-        self.menu()
+    def connect(self):
+        self.client_socket.connect((self.host, self.port))
+        print(f"Connected to server at {self.host}:{self.port}")
+        self.client_recive()
+        
 
-    def menu (self):
-        self.gui.menu_page()
+    def disconnect(self):
+        print("Client disconnected")
+        self.stop_flag.set() # Set the stop flag to signal thread termination
+        self.client_socket.close()
+
+
+    def send_message(self, data):
+        print(data)
+        command = data[0]            
+        info = data[1]
+        message =f'{command}:{info}'
+        print (type(data))
+        self.client_socket.send(message.encode())
+        if command == 'exit':
+            self.client_socket.close()
+
+        if command == 'signin':
+            pass
+
+        if command =='signup':
+            pass
+        
+        
 
 
 
@@ -31,25 +56,7 @@ class Client():
                 message = self.client_socket.recv(SERVER_BUFFER_SIZE).decode()
                 print (message)
             except:
-                print('error')
+                print('byebye')
                 self.client_socket.close()
                 break
-
-        
-
-        # while True:
-        #     self.client_send()
-def main(self):
-    # print('nice')
-    send_thread = threading.Thread(target=self.signin)
-    send_thread.start()
-
-
-if __name__ == "__main__":
-    #לקרוא לפעולות מהגוי
-    # print('sdsd')
-    current_client = Client()
-    print(type(current_client.gui))
-    main(current_client) #מעביר 
-
-
+    

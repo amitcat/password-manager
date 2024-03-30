@@ -40,7 +40,8 @@ connection = create_connection('sm_app.sqlite')  # create the Connection DB
 create_users_table = """
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
+  Username TEXT NOT NULL,
+  Password TEXT NOT NULL,
   age INTEGER,
   gender TEXT,
   nationality TEXT,
@@ -55,7 +56,7 @@ gender = "male" #getting name fron user
 nationality = "IL" #getting name fron user
 create_users = f""" 
     INSERT INTO
-      users (name, age, gender, nationality, enteredDate)
+      users (Username, age, gender, nationality, enteredDate)
     VALUES
       ('{name}', {age}, '{gender}', '{nationality}', '{date.today()}');
     """

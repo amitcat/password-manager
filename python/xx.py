@@ -73,8 +73,9 @@ def first():
     print(f'{x}')
 
 
-
     root.mainloop()
+    print(f'{x}')
+
 
 def second():
     root=Tk()
