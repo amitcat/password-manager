@@ -26,11 +26,11 @@ def execute_query(connection, query):
 
 def execute_read_query(connection, query):
     cursor = connection.cursor()
-    result = None
     try:
         cursor.execute(query)
-        result = cursor.fetchall()
-        return result
+        result = cursor.fetchone()
+        print (8, f'{result}' , 9)
+        return result is not None
     except Error as e:
         print(f"The error '{e}' occurred")
     return []
@@ -48,15 +48,20 @@ CREATE TABLE IF NOT EXISTS users (
   enteredDate TEXT
 );
 """
+check_two = f'''
+            SELECT * FROM passwordtable WHERE name= 'lol' AND age= 25
+        '''
+result = execute_read_query(connection, check_two)
+print (f'>>>> {result}')
 
 # adding to the table
-name = "amit" #getting name fron user
-age = 25 # getting age from user
+name = "test" #getting name fron user
+age = 123456 # getting age from user
 gender = "male" #getting name fron user
 nationality = "IL" #getting name fron user
 create_users = f""" 
     INSERT INTO
-      users (Username, age, gender, nationality, enteredDate)
+      users (name, age, gender, nationality, enteredDate)
     VALUES
       ('{name}', {age}, '{gender}', '{nationality}', '{date.today()}');
     """
@@ -70,13 +75,27 @@ WHERE
   age  = 35
 """
 
+check_if_password_match_to_user = f"""SELECT age FROM users WHERE name= '{'r'}' """
+
+age123 = execute_read_query(connection,check_if_password_match_to_user)
+print(type(age123))
+if str(age123) == '123456':
+    print('nice')
+
+
+
+# for  ages in age123:
+#   print(ages[0])
+
 # execute_query(connection, create_users_table)  # creating table
 
 # execute_query(connection, update_post_description)  # Updating
 
-execute_query(connection, create_users) # creating user
-select_users = "SELECT * from users"
-users = execute_read_query(connection, select_users) # returning list of users
+# execute_query(connection, create_users) # creating user
 
-for user in users:
-    print(user)
+
+# select_users = "SELECT * from users"
+# users = execute_read_query(connection, select_users) # returning list of users
+
+# for user in users:
+#     print(user)

@@ -1,6 +1,7 @@
 import socket
 import threading
 from settings import *
+from server_utils import Encryption
 
 
 
@@ -10,9 +11,11 @@ class MultiThreadedClient(threading.Thread):
         self.host = host
         self.port = port
         self.username = ""
-        self.messages = []
+        self.messages = ""
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.stop_flag = threading.Event() # Event to signal thread termination
+        self.client_encryption = Encryption()
+        self.server_public_key = ""
     
     def run(self):
         client_thread = threading.Thread(target=self.connect)
@@ -21,6 +24,9 @@ class MultiThreadedClient(threading.Thread):
     def connect(self):
         self.client_socket.connect((self.host, self.port))
         print(f"Connected to server at {self.host}:{self.port}")
+        message = self.client_socket.recv(SERVER_BUFFER_SIZE)
+        self.server_public_key = RSA.import_key(message)
+        self.client_socket.sendall(self.client_encryption.export_public_key())
         self.client_recive()
         
 
@@ -32,29 +38,23 @@ class MultiThreadedClient(threading.Thread):
 
     def send_message(self, data):
         print(data)
-        command = data[0]            
-        info = data[1]
-        message =f'{command}:{info}'
-        print (type(data))
-        self.client_socket.send(message.encode())
+        command = data[0]
+        message = '||'.join(data)
+        print(message)
+        encrypted_message = self.client_encryption.encrypt(message, self.server_public_key)
+        self.client_socket.sendall(encrypted_message)
         if command == 'exit':
             self.client_socket.close()
 
-        if command == 'signin':
-            pass
-
-        if command =='signup':
-            pass
         
-        
-
-
-
     def client_recive(self):
         while True:
             try:
-                message = self.client_socket.recv(SERVER_BUFFER_SIZE).decode()
-                print (message)
+                message = self.client_socket.recv(SERVER_BUFFER_SIZE)
+                print(message)
+                decrypted_message = self.client_encryption.decrypt(message)
+                self.messages = decrypted_message
+                print (decrypted_message)
             except:
                 print('byebye')
                 self.client_socket.close()
