@@ -39,12 +39,12 @@ class Database:
         else:
             self.create_user_table()
             conn, cursor = self.connect_to_db()
-            cursor.execute(f'''
+            cursor.execute('''
                 INSERT INTO 
                     users (Username, Password, EnteredDate)
                 VALUES 
-                    ('{user_name}', '{password}', '{date.today()}')
-            ''')
+                    (?, ?, ?)
+            ''', (user_name, password, date.today()))
             conn.commit()
             cursor.close()
             conn.close()
@@ -54,9 +54,9 @@ class Database:
         '''checks if a certain user already have this web in the password table'''
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
-        cursor.execute(f'''
-            SELECT * FROM passwordtable WHERE Username= '{user_name}' AND WebName= '{web_name}'
-        ''')
+        cursor.execute('''
+            SELECT * FROM passwordtable WHERE Username= ? AND WebName= ?
+        ''', (user_name, web_name))
         result = cursor.fetchone()
 
         conn.commit()
@@ -69,9 +69,9 @@ class Database:
         '''checks if a certain user is in the users table'''
         self.create_user_table()
         conn, cursor = self.connect_to_db()
-        cursor.execute(f'''
-            SELECT * FROM users WHERE Username= '{user_name}'
-        ''')
+        cursor.execute('''
+            SELECT * FROM users WHERE Username= ?
+        ''', (user_name,))
         result = cursor.fetchone()
 
         conn.commit()
@@ -80,20 +80,21 @@ class Database:
 
         return result is not None
 
-    def check_current_password(self, user_name, web_name, current_password, encryption):
+    def check_current_password(self, user_name, web_name, current_password, CIPHER):
         '''check if the current password is the same as the password stored in DB'''
         print('checking if the current password is the same as the password stored in DB')
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
-        cursor.execute(f'''
-                SELECT PasswordToWeb FROM passwordtable WHERE Username= '{user_name}' AND WebName= '{web_name}'
-    ''')
-        result = cursor.fetchone()[0].encode()
+        cursor.execute('''
+                SELECT PasswordToWeb FROM passwordtable WHERE Username= ? AND WebName= ?
+    ''', (user_name, web_name))
+        result = cursor.fetchone()[0]
+        print('1')
         print(result)
-        decrypted_result = encryption.decrypt(result)
-        print(decrypted_result.decode())
+        decrypted_result = CIPHER.decrypt(result)
+        print(decrypted_result)
         print('2')
-        decrypted_current_password = encryption.decrypt(current_password)
+        decrypted_current_password = CIPHER.decrypt(current_password)
         print('3')
         print(decrypted_result)
         print(decrypted_current_password)
@@ -107,18 +108,18 @@ class Database:
         conn.close()
         return same_password # return True if the current password is the same as the password stored in DB
         
-    def check_current_password_to_new_password(self, user_name, web_name, new_password, encryption):
+    def check_current_password_to_new_password(self, user_name, web_name, new_password, CIPHER):
         '''check if the current password is the same as the new password'''
         print('checking if the current password is the same as the new password')
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
-        cursor.execute(f'''
-                SELECT PasswordToWeb FROM passwordtable WHERE Username= '{user_name}' AND WebName= '{web_name}' 
-            ''')
+        cursor.execute('''
+                SELECT PasswordToWeb FROM passwordtable WHERE Username= ? AND WebName= ? 
+            ''', (user_name, web_name))
         same_password = None
-        result = cursor.fetchone()[0].encode('utf-8')
-        decrypted_result = encryption.decrypt(result)
-        decrypted_new_password = encryption.decrypt(new_password)
+        result = cursor.fetchone()[0]
+        decrypted_result = CIPHER.decrypt(result)
+        decrypted_new_password = CIPHER.decrypt(new_password)
         if decrypted_result == decrypted_new_password:
             same_password = True
         else:
@@ -135,9 +136,9 @@ class Database:
         self.create_user_table()
         conn, cursor = self.connect_to_db()
         if self.check_user(user_name):
-            cursor.execute(f'''
-                SELECT Password FROM users WHERE Username= '{user_name}'
-            ''')
+            cursor.execute('''
+                SELECT Password FROM users WHERE Username= ?
+            ''', (user_name,))
             result = cursor.fetchone()[0]
             if result == password:
                 output_message = "ok"
@@ -174,12 +175,12 @@ class Database:
             output_message = 'problem'
         else:
             print(f'{user_name}  {web_name}  {password_for_web}  ')
-            cursor.execute(f'''
+            cursor.execute('''
                     INSERT INTO 
                         passwordtable (Username, WebName, PasswordToWeb, EnteredDate)
                     VALUES 
-                        ('{user_name}', '{web_name}', '{password_for_web}' ,'{date.today()}')
-                ''')
+                        (?, ?, ? ,?)
+                ''', (user_name, web_name, password_for_web ,date.today()))
             
             output_message='ok'
             conn.commit()
@@ -189,19 +190,19 @@ class Database:
         return output_message
 
 
-    def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , encryption):
+    def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , CIPHER):
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         output_message =''
         if self.check_user_to_web(user_name,web_name):
-            if self.check_current_password(user_name, web_name ,current_password_for_web.encode(), encryption):
-                if not self.check_current_password_to_new_password(user_name, web_name ,new_password_for_web.encode(), encryption):
+            if self.check_current_password(user_name, web_name ,current_password_for_web, CIPHER):
+                if not self.check_current_password_to_new_password(user_name, web_name ,new_password_for_web, CIPHER):
 
-                    cursor.execute(f'''
+                    cursor.execute('''
                         UPDATE passwordtable
-                        SET PasswordToWeb = '{new_password_for_web}', EnteredDate= '{date.today()}'
-                        WHERE Username= '{user_name}' AND WebName= '{web_name}'
-                    ''')
+                        SET PasswordToWeb = ?, EnteredDate= ?
+                        WHERE Username= ? AND WebName= ?
+                    ''', (new_password_for_web, date.today(), user_name, web_name))
 
                     output_message='ok'
 

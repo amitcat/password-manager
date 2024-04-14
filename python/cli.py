@@ -141,31 +141,32 @@
 # a = '1||2||3||4||5'
 # print(a.split('||'))
 
-# from cryptography.fernet import Fernet
-# KEY = Fernet.generate_key()
-# CIPHER_SUITE = Fernet(KEY)
-
-# password = 'hello'.encode()
-# e_password = CIPHER_SUITE.encrypt(password).decode()
-# print(e_password)
-# print('now >>>')
-# d_password = CIPHER_SUITE.decrypt(e_password)
-# print(d_password.decode())
+from cryptography.fernet import Fernet
+KEY = Fernet.generate_key()
+CIPHER_SUITE = Fernet(KEY)
+print('key >>>>>>',KEY)
+print(CIPHER_SUITE)
+password = 'hello'.encode()
+e_password = CIPHER_SUITE.encrypt(password).decode()
+print(type(e_password))
+print('now >>>')
+d_password = CIPHER_SUITE.decrypt(e_password.encode())
+print(d_password.decode())
 
 
 # from cryptography.fernet import Fernet
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 
-key =RSA.generate(1024)
-public_key = key.publickey()
-private_key = key
-msg = 'hello'
-cipher = PKCS1_OAEP.new(public_key)
-ciphertext = cipher.encrypt(msg.encode())
-# print(ciphertext)
-cipher = PKCS1_OAEP.new(private_key)
-plaintext = cipher.decrypt(ciphertext).decode()
+# key =RSA.generate(1024)
+# public_key = key.publickey()
+# private_key = key
+# msg = 'hello'
+# cipher = PKCS1_OAEP.new(public_key)
+# ciphertext = cipher.encrypt(msg.encode())
+# # print(ciphertext)
+# cipher = PKCS1_OAEP.new(private_key)
+# plaintext = cipher.decrypt(ciphertext).decode()
 # print(plaintext)
 # print(public_key)
 # print(private_key)
@@ -186,23 +187,24 @@ class Encryption:
         self.key =RSA.generate(1024)
         self.public_key = self.key.publickey()
         self.private_key = self.key
-        self.CHUNK_SIZE = 16
+        # self.key_for_password = Fernet.generate_key()
 
     
     def export_public_key(self):
-        return self.public_key
+        return self.public_key.export_key()
     
     def encrypt(self, plaintext , public_key):
         # Implement code to encrypt ciphertext using symmetric encryption
         cipher = PKCS1_OAEP.new(public_key)
+        chunk_size = 86 
         ciphertext = b""
         
-        while plaintext:
-            chunk = plaintext[:self.CHUNK_SIZE]
-            plaintext = plaintext[self.CHUNK_SIZE:]
+        for i in range(0, len(plaintext),chunk_size ): # Encrypt in chunks
+            chunk = plaintext[i:i + chunk_size]
+            print(f'{chunk=}, {i=}')
             encrypted_chunk = cipher.encrypt(chunk)
             ciphertext += encrypted_chunk
-    
+
         return ciphertext
         # ciphertext = cipher.encrypt(plaintext.encode())
         # return ciphertext
@@ -210,17 +212,28 @@ class Encryption:
     def decrypt(self, ciphertext):
         # Implement code to decrypt ciphertext using symmetric encryption
         cipher = PKCS1_OAEP.new(self.private_key)
+        chunk_size = 128
         plaintext = b""
         
-        while ciphertext:
-            chunk = ciphertext[:self.CHUNK_SIZE]
-            ciphertext = ciphertext[self.CHUNK_SIZE:]
+
+        for i in range(0, len(ciphertext), chunk_size): # Decrypt in chunks
+            chunk = ciphertext[i:i + chunk_size]
             decrypted_chunk = cipher.decrypt(chunk)
             plaintext += decrypted_chunk
-        
-        return plaintext.decode()
+
+        plaintext = plaintext.decode()
+        return plaintext
         # plaintext = cipher.decrypt(ciphertext).decode()
         # return plaintext
+    # def encrypt_password(self, password):
+    #     cipher = Fernet(self.key_for_password)
+    #     encrypted_password = cipher.encrypt(password.encode())
+    #     return encrypted_password.decode()
+
+    # def decrypt_password(self, encrypted_password):
+    #     cipher = Fernet(self.key_for_password)
+    #     decrypted_password = cipher.decrypt(encrypted_password).decode()
+    #     return decrypted_password
     
 
 class Client:
@@ -232,15 +245,19 @@ class b:
         self.hi = a
     def s(self, msg):
         self.hi = self.client.encryption.encrypt(msg, self.hi)
+        return self.hi
     
-one = Encryption()
-two = b(one.export_public_key())
+# one = Encryption()
+# two = b(RSA.import_key(one.export_public_key()))
 
-msg = b'login||fdfdfg||fbf9a1b2b8a81ccf7d724ccba3c5fbff11da357e308b23766958aad7e90ae4ea||sdsjadjasdnkjadn||slkaldjalksjdkadk||djhsjksdhkjsjss'
-ciphertext = two.client.encryption.encrypt(msg, one.export_public_key())
-print(ciphertext)
-if '||' in str(ciphertext):
-    print(str(ciphertext).index('||'))
-print(len(ciphertext))
-plaintext = one.decrypt(ciphertext)
-print(plaintext)
+# msg = 'ased'
+# # encry_msg = two.client.encryption.encrypt_password(msg)
+# # print(encry_msg)
+# ciphertext = two.s(msg.encode())
+# print(ciphertext)
+# if '|||' in str(ciphertext):
+#     print(str(ciphertext).index('|||'))
+# # print(len(ciphertext))
+# plaintext = one.decrypt(b'\x88\xc5C#\x17')
+# # decry_msg = two.client.encryption.decrypt_password(plaintext)
+# print(plaintext)

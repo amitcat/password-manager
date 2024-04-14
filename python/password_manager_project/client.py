@@ -1,7 +1,10 @@
 import socket
+import select
 import threading
 from settings import *
 from server_utils import Encryption
+from cryptography.fernet import Fernet
+
 
 
 
@@ -16,6 +19,8 @@ class MultiThreadedClient(threading.Thread):
         self.stop_flag = threading.Event() # Event to signal thread termination
         self.client_encryption = Encryption()
         self.server_public_key = ""
+        self.CIPHER = Fernet(self.client_encryption.key_for_password)
+        
     
     def run(self):
         client_thread = threading.Thread(target=self.connect)
@@ -27,6 +32,7 @@ class MultiThreadedClient(threading.Thread):
         message = self.client_socket.recv(SERVER_BUFFER_SIZE)
         self.server_public_key = RSA.import_key(message)
         self.client_socket.sendall(self.client_encryption.export_public_key())
+        self.client_socket.sendall(self.client_encryption.key_for_password)
         self.client_recive()
         
 
@@ -39,22 +45,50 @@ class MultiThreadedClient(threading.Thread):
     def send_message(self, data):
         print(data)
         command = data[0]
-        message = '||'.join(data)
-        print(message)
-        encrypted_message = self.client_encryption.encrypt(message, self.server_public_key)
+        message = '|||'.join(data)
+        print('>>>',message)
+        encrypted_message = self.client_encryption.encrypt_msg(message.encode(), self.server_public_key)
+        self.client_socket.send(str(len(encrypted_message)).zfill(8).encode())
         self.client_socket.sendall(encrypted_message)
+        print(f'DEBUG: {encrypted_message}')
+        
         if command == 'exit':
             self.client_socket.close()
 
         
+    # def client_recive(self):
+    #     rlist, wlist, elist = select.select([self.client_socket],[],[])
+
+    #     for current_socket in rlist:
+
+    #         length = int(current_socket.recv(8).decode())
+    #         message = current_socket.recv(length)
+    #         print(f'RECIEVED MESSAGE: {message}')
+    #         decrypted_message = self.client_encryption.decrypt(message)
+    #         print(f'DECRYPTED MESSAGE: {decrypted_message}')
+    #         self.messages = decrypted_message
+    #         print(f'DEBUG: {self.messages}')
+
+            # except:
+            #     print('byebye')
+            #     self.client_socket.close()
+            #     break
+
     def client_recive(self):
         while True:
             try:
-                message = self.client_socket.recv(SERVER_BUFFER_SIZE)
-                print(message)
-                decrypted_message = self.client_encryption.decrypt(message)
+                length = int(self.client_socket.recv(8).decode())
+                message = self.client_socket.recv(length)
+                print(f'RECIEVED MESSAGE: {message}')
+                decrypted_message = self.client_encryption.decrypt_msg(message)
+                print(f'DECRYPTED MESSAGE: {decrypted_message}')
                 self.messages = decrypted_message
-                print (decrypted_message)
+                print(f'DEBUG: {self.messages}')
+                # message = self.client_socket.recv(SERVER_BUFFER_SIZE)
+                # print(message)
+                # decrypted_message = self.client_encryption.decrypt(message)
+                # self.messages = decrypted_message
+                # print (decrypted_message)
             except:
                 print('byebye')
                 self.client_socket.close()

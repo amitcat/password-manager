@@ -4,6 +4,8 @@ from client import MultiThreadedClient
 from settings import *
 import hashlib
 import random
+from cryptography.fernet import Fernet
+
 
 
 
@@ -15,6 +17,9 @@ class GUI():
         self.top_levels = ""
         self.message = []
         self.exit = False
+        self.KEY = Fernet.generate_key()
+        self.CIPHER_SUITE = Fernet(self.KEY)
+        
         
 
     #region Screens
@@ -359,14 +364,14 @@ class GUI():
         #בדיקה של משתמש
         if entered_username == 'Username' or entered_password == 'Password' or entered_username == '' or entered_password == '' : #קיים בטבלה- ממשיך הלאה
             messagebox.showerror('signup' , 'your username or password can not be the default username or password')
-        elif "||" in entered_username :
-            messagebox.showerror('signup' , f'your username can not contain "||"')
+        elif "|||" in entered_username :
+            messagebox.showerror('signup' , f'your username can not contain "|||"')
 
 
         else: #לא קיים בטבלה- מכניס לטבלה וממשיך הלאה
             password = bytes(entered_password, 'utf-8')
             hash_password = hashlib.sha256(password).hexdigest()
-            username_password = f'{entered_username}||{hash_password}'
+            username_password = f'{entered_username}|||{hash_password}'
             self.message = ['signup' , username_password , '', '', '']
             self.client.messages = ""
             self.client.send_message(self.message)
@@ -391,14 +396,14 @@ class GUI():
         #בדיקה של משתמש
         if entered_username == 'Username' or entered_password == 'Password' or entered_username == '' or entered_password == '' : #קיים בטבלה- ממשיך הלאה
             messagebox.showerror('login' , 'your username or password can not be Username or Password or null')
-        elif "||" in entered_username :
-            messagebox.showerror('login' , f'your username can not contain "||"')
+        elif "|||" in entered_username :
+            messagebox.showerror('login' , f'your username can not contain "|||"')
 
 
         else: #לבדוק האם זה נמצא בטבלת משתמשים, אם כן -> להכניס. אחרת -> לכתוב שהוא לא רשום
             password = bytes(entered_password, 'utf-8')
             hash_password = hashlib.sha256(password).hexdigest()
-            username_password = f'{entered_username}||{hash_password}'
+            username_password = f'{entered_username}|||{hash_password}'
             self.message = ['login' , username_password, '', '', '']
             self.client.messages = ""
             self.client.send_message(self.message)
@@ -432,13 +437,13 @@ class GUI():
 
         if entered_web == '' or entered_password == '':
             messagebox.showerror('Add web and password' , 'your web name or password can not be null')
-        elif "||" in entered_web :
-            messagebox.showerror('Add web and password' , f'your web name can not contain "||"')
+        elif "|||" in entered_web :
+            messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
         else:
             password_to_encrypt = entered_password
-            encrypted_password = self.client.client_encryption.encrypt(password_to_encrypt,self.client.server_public_key)
-            print('1234', str(encrypted_password), '1234')
-            self.message = ['insert web and password' , username, '', entered_web, str(encrypted_password),'']
+            encrypted_password = self.client.CIPHER.encrypt(password_to_encrypt.encode()).decode()
+            print('1234', encrypted_password, '')
+            self.message = ['insert web and password' , username, '', entered_web, encrypted_password,'']
             self.client.messages = ""
             self.client.send_message(self.message)
             while self.client.messages == "":
@@ -450,7 +455,7 @@ class GUI():
                 self.menu_screen(username)
 
             if server_message == 'problem':
-                messagebox.showinfo("insert new web name and password", f'{entered_web}ready exists under your username')
+                messagebox.showinfo("insert new web name and password", f'{entered_web} already exists under your username')
                 root.deiconify()
 
     def update_password_for_web(self, username, web_name, password, new_password, root):
@@ -460,14 +465,16 @@ class GUI():
 
         if entered_web == '' or entered_password == '' or entered_new_password == '':
             messagebox.showerror('Add web and password' , 'your web name or password can not be null')
-        elif "||" in entered_web :
-            messagebox.showerror('Add web and password' , f'your web name can not contain "||"')
+        elif "|||" in entered_web :
+            messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
         else:
             password_to_encrypt = entered_password
-            encrypted_password = self.client.client_encryption.encrypt(password_to_encrypt, self.client.server_public_key)
+            encrypted_password = self.client.CIPHER.encrypt(password_to_encrypt.encode()).decode()
             new_password_to_encrypt = entered_new_password
-            encrypted_new_password = self.client.client_encryption.encrypt(new_password_to_encrypt, self.client.server_public_key)
-            self.message = ['update password for web' , username, '', entered_web, encrypted_password.decode(),encrypted_new_password.decode()]
+            encrypted_new_password = self.client.CIPHER.encrypt(new_password_to_encrypt.encode()).decode()
+            print(encrypted_password)
+            print(encrypted_new_password)
+            self.message = ['update password for web' , username, '', entered_web, encrypted_password,encrypted_new_password]
             self.client.messages = ""
             self.client.send_message(self.message)
             while self.client.messages == "":
