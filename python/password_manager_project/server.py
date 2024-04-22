@@ -19,7 +19,7 @@ class Server():
         self.encryption = Encryption()
         self.client_public_key = {}
         self.client_symetric_keys = {}
-        self.CIPHER =''
+        self.CIPHER ={}
         print(f"Server listening on port {SERVER_PORT}...")
         self.messages = []  
         self.client_sockets = []
@@ -33,7 +33,7 @@ class Server():
                     # print('receiver', receiver)
                     # print('client_addr', client_addr)
                     cipher = self.format_message(message, client_addr)
-                    print('cipher', cipher)
+                    # print('cipher', cipher)
                     receiver.send(str(len(cipher)).zfill(8).encode())
                     receiver.sendall(cipher)
                     receivers.remove(receiver)
@@ -89,8 +89,12 @@ class Server():
                     server_public_key = self.encryption.export_public_key()
                     client_conn.sendall(server_public_key)
                     self.client_public_key[client_addr] = RSA.import_key(client_conn.recv(self.server_buffer_size))
-                    self.client_symetric_keys[client_addr] = client_conn.recv(self.server_buffer_size)
-                    self.CIPHER = Fernet(self.client_symetric_keys[client_addr])
+                    if client_addr not in self.client_symetric_keys.keys():
+                        self.client_symetric_keys[client_addr] = client_conn.recv(self.server_buffer_size)
+                        self.CIPHER[client_addr] = Fernet(self.client_symetric_keys[client_addr])
+                    else:
+                        client_conn.recv(self.server_buffer_size)
+                    
                     # print('client symetric key >>>>>>',self.client_symetric_keys[client_addr])
                 else:
                     if current_socket in self.rlist:
@@ -140,7 +144,7 @@ class Server():
 
                         if command =='update password for web':
                             print('update password for web command')
-                            message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.CIPHER)
+                            message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.CIPHER[client_addr])
                             print("OUTPUT: >>>>> " + str(message))
                             self.messages.append((message,client_addr,[current_socket]))
                             # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))

@@ -8,7 +8,6 @@ from cryptography.fernet import Fernet
 
 
 
-
 class GUI():
     def __init__(self,client) -> None:
         # self.user = ''

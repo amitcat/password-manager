@@ -142,16 +142,16 @@
 # print(a.split('||'))
 
 from cryptography.fernet import Fernet
-KEY = Fernet.generate_key()
-CIPHER_SUITE = Fernet(KEY)
-print('key >>>>>>',KEY)
-print(CIPHER_SUITE)
-password = 'hello'.encode()
-e_password = CIPHER_SUITE.encrypt(password).decode()
-print(type(e_password))
-print('now >>>')
-d_password = CIPHER_SUITE.decrypt(e_password.encode())
-print(d_password.decode())
+# KEY = Fernet.generate_key()
+# CIPHER_SUITE = Fernet(KEY)
+# print('key >>>>>>',KEY)
+# print(CIPHER_SUITE)
+# password = 'hello'.encode()
+# e_password = CIPHER_SUITE.encrypt(password).decode()
+# print(type(e_password))
+# print('now >>>')
+# d_password = CIPHER_SUITE.decrypt(e_password.encode())
+# print(d_password.decode())
 
 
 # from cryptography.fernet import Fernet
@@ -261,3 +261,12 @@ class b:
 # plaintext = one.decrypt(b'\x88\xc5C#\x17')
 # # decry_msg = two.client.encryption.decrypt_password(plaintext)
 # print(plaintext)
+# msg = str('hi'.encode())
+# for i in msg[2:-1]:
+#     print(i, end='')
+
+dic = {}
+dic['a'] = 'hello'
+if 'b' not in dic.keys():
+    print('true')
+print(dic)
