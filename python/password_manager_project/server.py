@@ -4,6 +4,7 @@ import select
 from settings import *
 from server_utils import *
 import time
+# start
 
 class Server():
     def __init__(self, server_ip, server_port, server_buffer_size):
@@ -100,9 +101,8 @@ class Server():
                     if current_socket in self.rlist:
                         length = int(current_socket.recv(8).decode())
                         client_data = self.recvall(current_socket, length)
-                        print(f'BEBUG: {client_data}')
                         decrypted_client_data = self.encryption.decrypt_msg(client_data)
-                        print(decrypted_client_data)
+                        # print(f'DEBUG: {decrypted_client_data}')
                         command , username , password , web_name , password_for_web ,new_password_for_web = decrypted_client_data.split("|||")
 
                         if command == 'exit':
@@ -144,7 +144,7 @@ class Server():
 
                         if command =='update password for web':
                             print('update password for web command')
-                            message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.CIPHER[client_addr])
+                            message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.encryption)
                             print("OUTPUT: >>>>> " + str(message))
                             self.messages.append((message,client_addr,[current_socket]))
                             # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))

@@ -440,9 +440,9 @@ class GUI():
             messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
         else:
             password_to_encrypt = entered_password
-            encrypted_password = self.client.CIPHER.encrypt(password_to_encrypt.encode()).decode()
-            print('1234', encrypted_password, '')
-            self.message = ['insert web and password' , username, '', entered_web, encrypted_password,'']
+            encrypted_password = self.client.client_encryption.encrypt_msg(password_to_encrypt.encode(), self.client.server_public_key) #.decode()
+            # print('encrypted_password',encrypted_password)
+            self.message = ['insert web and password' , username, '', entered_web, str(encrypted_password),'']
             self.client.messages = ""
             self.client.send_message(self.message)
             while self.client.messages == "":
@@ -468,12 +468,10 @@ class GUI():
             messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
         else:
             password_to_encrypt = entered_password
-            encrypted_password = self.client.CIPHER.encrypt(password_to_encrypt.encode()).decode()
+            encrypted_password = self.client.client_encryption.encrypt_msg(password_to_encrypt.encode(), self.client.server_public_key) #.decode()
             new_password_to_encrypt = entered_new_password
-            encrypted_new_password = self.client.CIPHER.encrypt(new_password_to_encrypt.encode()).decode()
-            print(encrypted_password)
-            print(encrypted_new_password)
-            self.message = ['update password for web' , username, '', entered_web, encrypted_password,encrypted_new_password]
+            encrypted_new_password = self.client.client_encryption.encrypt_msg(new_password_to_encrypt.encode(), self.client.server_public_key) #.decode()
+            self.message = ['update password for web' , username, '', entered_web, str(encrypted_password),str(encrypted_new_password)]
             self.client.messages = ""
             self.client.send_message(self.message)
             while self.client.messages == "":

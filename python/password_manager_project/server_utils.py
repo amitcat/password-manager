@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 from datetime import date
 from settings import *
-
+# start
 
 
 
@@ -80,7 +80,7 @@ class Database:
 
         return result is not None
 
-    def check_current_password(self, user_name, web_name, current_password, CIPHER):
+    def check_current_password(self, user_name, web_name, current_password, encription):
         '''check if the current password is the same as the password stored in DB'''
         print('checking if the current password is the same as the password stored in DB')
         self.create_password_to_webs_table()
@@ -90,14 +90,12 @@ class Database:
     ''', (user_name, web_name))
         result = cursor.fetchone()[0]
         print('1')
-        print(result)
-        decrypted_result = CIPHER.decrypt(result)
-        print(decrypted_result)
+        print('type', type(eval(result)))
+        decrypted_result = encription.decrypt_msg(eval(result))
         print('2')
-        decrypted_current_password = CIPHER.decrypt(current_password)
+        decrypted_current_password = encription.decrypt_msg(eval(current_password))
         print('3')
-        print(decrypted_result)
-        print(decrypted_current_password)
+
         if decrypted_result == decrypted_current_password:
             same_password = True
         else:
@@ -108,7 +106,7 @@ class Database:
         conn.close()
         return same_password # return True if the current password is the same as the password stored in DB
         
-    def check_current_password_to_new_password(self, user_name, web_name, new_password, CIPHER):
+    def check_current_password_to_new_password(self, user_name, web_name, new_password, encryption):
         '''check if the current password is the same as the new password'''
         print('checking if the current password is the same as the new password')
         self.create_password_to_webs_table()
@@ -118,8 +116,8 @@ class Database:
             ''', (user_name, web_name))
         same_password = None
         result = cursor.fetchone()[0]
-        decrypted_result = CIPHER.decrypt(result)
-        decrypted_new_password = CIPHER.decrypt(new_password)
+        decrypted_result = encryption.decrypt_msg(eval(result))
+        decrypted_new_password = encryption.decrypt_msg(eval(new_password))
         if decrypted_result == decrypted_new_password:
             same_password = True
         else:
@@ -132,7 +130,6 @@ class Database:
 
     def login_into_the_system(self,user_name, password):
         '''check if user in the system and log him in'''
-        print(self.check_user(user_name))
         self.create_user_table()
         conn, cursor = self.connect_to_db()
         if self.check_user(user_name):
@@ -190,13 +187,13 @@ class Database:
         return output_message
 
 
-    def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , CIPHER):
+    def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , encryption):
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         output_message =''
         if self.check_user_to_web(user_name,web_name):
-            if self.check_current_password(user_name, web_name ,current_password_for_web, CIPHER):
-                if not self.check_current_password_to_new_password(user_name, web_name ,new_password_for_web, CIPHER):
+            if self.check_current_password(user_name, web_name ,current_password_for_web, encryption):
+                if not self.check_current_password_to_new_password(user_name, web_name ,new_password_for_web, encryption):
 
                     cursor.execute('''
                         UPDATE passwordtable

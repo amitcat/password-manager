@@ -43,14 +43,11 @@ class MultiThreadedClient(threading.Thread):
 
 
     def send_message(self, data):
-        print(data)
         command = data[0]
         message = '|||'.join(data)
-        print('>>>',message)
         encrypted_message = self.client_encryption.encrypt_msg(message.encode(), self.server_public_key)
         self.client_socket.send(str(len(encrypted_message)).zfill(8).encode())
         self.client_socket.sendall(encrypted_message)
-        print(f'DEBUG: {encrypted_message}')
         
         if command == 'exit':
             self.client_socket.close()

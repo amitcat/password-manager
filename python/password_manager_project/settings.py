@@ -21,12 +21,15 @@ class Encryption:
         cipher = PKCS1_OAEP.new(public_key)
         chunk_size = 86 
         ciphertext = b""
+        # print('plaintext >>>>>>',plaintext, type(plaintext))
         
         for i in range(0, len(plaintext), chunk_size): # Encrypt in chunks
             chunk = plaintext[i:i + chunk_size]
             encrypted_chunk = cipher.encrypt(chunk)
             ciphertext += encrypted_chunk
+        # print('ciphertext >>>>>>',ciphertext, len(ciphertext))
         return ciphertext
+    
         # ciphertext = cipher.encrypt(plaintext.encode())
         # return ciphertext
     
@@ -35,28 +38,18 @@ class Encryption:
         cipher = PKCS1_OAEP.new(self.private_key)
         chunk_size = 128
         plaintext = b""
+        # print('ciphertext in decrypt >>>>>>',ciphertext, len(ciphertext))
+
         
 
         for i in range(0, len(ciphertext), chunk_size): # Decrypt in chunks
             chunk = ciphertext[i:i + chunk_size]
-            print(cipher.decrypt(chunk))
+            # print('current chunk >>>>>>',chunk, len(chunk))
             decrypted_chunk = cipher.decrypt(chunk)
             plaintext += decrypted_chunk
 
         plaintext = plaintext.decode()
         return plaintext
-        # plaintext = cipher.decrypt(ciphertext).decode()
-        # return plaintext
-    
-    # def encrypt_password(self, password):
-    #     cipher = Fernet(self.key_for_password)
-    #     encrypted_password = cipher.encrypt(password.encode())
-    #     return encrypted_password
-
-    # def decrypt_password(self, encrypted_password):
-    #     cipher = Fernet(self.key_for_password)
-    #     decrypted_password = cipher.decrypt(encrypted_password).decode()
-    #     return decrypted_password
 
 
 

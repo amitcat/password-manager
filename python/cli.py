@@ -265,8 +265,10 @@ class b:
 # for i in msg[2:-1]:
 #     print(i, end='')
 
-dic = {}
-dic['a'] = 'hello'
-if 'b' not in dic.keys():
-    print('true')
-print(dic)
+# dic = {}
+# dic['a'] = 'hello'
+# if 'b' not in dic.keys():
+#     print('true')
+# print(dic)
+
+
