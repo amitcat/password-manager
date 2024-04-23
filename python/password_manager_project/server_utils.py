@@ -106,7 +106,7 @@ class Database:
         conn.close()
         return same_password # return True if the current password is the same as the password stored in DB
         
-    def check_current_password_to_new_password(self, user_name, web_name, new_password, encryption):
+    def check_current_password_to_new_password(self, user_name, web_name, new_password, encription):
         '''check if the current password is the same as the new password'''
         print('checking if the current password is the same as the new password')
         self.create_password_to_webs_table()
@@ -116,8 +116,9 @@ class Database:
             ''', (user_name, web_name))
         same_password = None
         result = cursor.fetchone()[0]
-        decrypted_result = encryption.decrypt_msg(eval(result))
-        decrypted_new_password = encryption.decrypt_msg(eval(new_password))
+        decrypted_result = encription.decrypt_msg(eval(result))
+        print('hi ', decrypted_result)
+        decrypted_new_password = encription.decrypt_msg(eval(new_password))
         if decrypted_result == decrypted_new_password:
             same_password = True
         else:
@@ -183,9 +184,7 @@ class Database:
             conn.commit()
             cursor.close()
             conn.close()
-        print(output_message)
         return output_message
-
 
     def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , encryption):
         self.create_password_to_webs_table()
@@ -216,6 +215,47 @@ class Database:
         else:
             print('web not exists')
             output_message= 'web not exists'
-        print(output_message)
+        return output_message
+
+    def show_password_by_web (self, user_name, web_name, encryption, client_public_key):
+        self.create_password_to_webs_table()
+        conn, cursor = self.connect_to_db()
+        output_message ='' # at the end output msg should be 'ok encrypted password' (enctypted with client public key)
+        if self.check_user_to_web(user_name,web_name):
+            cursor.execute('''
+                        SELECT PasswordToWeb FROM passwordtable WHERE Username= ? AND WebName= ?
+                    ''', (user_name, web_name))
+
+            result_password = cursor.fetchone()[0]
+            print(result_password)
+            decrypted_password = encryption.decrypt_msg(eval(result_password))
+            encrypted_password = encryption.encrypt_msg(decrypted_password.encode(), client_public_key)
+
+            output_message=f'ok {encrypted_password}'
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+        else:
+            print('web not exists')
+            output_message= 'web not exists'
+
+        return output_message
+
+    def delete_web_and_password(self,user_name, web_name):
+        self.create_password_to_webs_table()
+        conn, cursor = self.connect_to_db()
+        if self.check_user_to_web(user_name,web_name):
+            cursor.execute('''
+                    DELETE FROM passwordtable WHERE Username= ? AND WebName= ?
+                ''', (user_name, web_name))
+            output_message='ok'
+            conn.commit()
+            cursor.close()
+            conn.close()
+        else:
+            print('web not exists')
+            output_message= 'web not exists'
+        
         return output_message
 

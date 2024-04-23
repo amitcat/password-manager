@@ -90,13 +90,7 @@ class Server():
                     server_public_key = self.encryption.export_public_key()
                     client_conn.sendall(server_public_key)
                     self.client_public_key[client_addr] = RSA.import_key(client_conn.recv(self.server_buffer_size))
-                    if client_addr not in self.client_symetric_keys.keys():
-                        self.client_symetric_keys[client_addr] = client_conn.recv(self.server_buffer_size)
-                        self.CIPHER[client_addr] = Fernet(self.client_symetric_keys[client_addr])
-                    else:
-                        client_conn.recv(self.server_buffer_size)
                     
-                    # print('client symetric key >>>>>>',self.client_symetric_keys[client_addr])
                 else:
                     if current_socket in self.rlist:
                         length = int(current_socket.recv(8).decode())
@@ -151,8 +145,17 @@ class Server():
                             # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
                             # current_socket.send(encrypted_message)
 
-                        if command =='':
-                            pass
+                        if command =='show password by web':
+                            print('show password by web command')
+                            message = self.database.show_password_by_web(username, web_name, self.encryption, self.client_public_key[client_addr])
+                            print("OUTPUT: >>>>> " + str(message))
+                            self.messages.append((message,client_addr,[current_socket]))
+                            
+                        if command == 'remove web and password':
+                            print('remove web and password command')
+                            message = self.database.delete_web_and_password(username, web_name)
+                            print("OUTPUT: >>>>> " + str(message))
+                            self.messages.append((message,client_addr,[current_socket]))
 
                     else:
                         print(f'closing connection with {current_socket}')

@@ -32,7 +32,6 @@ class MultiThreadedClient(threading.Thread):
         message = self.client_socket.recv(SERVER_BUFFER_SIZE)
         self.server_public_key = RSA.import_key(message)
         self.client_socket.sendall(self.client_encryption.export_public_key())
-        self.client_socket.sendall(self.client_encryption.key_for_password)
         self.client_recive()
         
 

@@ -197,16 +197,24 @@ class GUI():
         functions.place(relx=0.5, rely=0.2, anchor='center')
 
         #insert a new web name and password button
-        
         insert_func_button = Button(frame, width=17, pady=7, text='insert new password', bg='#57a1f8', fg='white', border=0,
                                command=lambda : self.insert_web_name_and_password_screen(username))
         insert_func_button.place(relx=0.5,rely=0.3,anchor='center')
 
         #update password for a web button
-        
         update_func_button = Button(frame, width=17, pady=7, text='update password', bg='#57a1f8', fg='white', border=0,
                               command=lambda : self.update_password_for_web_screen(username))
         update_func_button.place(relx=0.5,rely=0.4,anchor='center')
+
+        #show password for a web button
+        show_func_button = Button(frame, width=17, pady=7, text='show password', bg='#57a1f8', fg='white', border=0,
+                              command=lambda : self.show_password_by_web_screen(username))
+        show_func_button.place(relx=0.5,rely=0.5,anchor='center')
+
+        #remove web and password button
+        remove_web_func_button = Button(frame, width=17, pady=7, text='remove web', bg='#57a1f8', fg='white', border=0,
+                                        command=lambda : self.remove_web_and_password_screen(username))
+        remove_web_func_button.place(relx=0.5,rely=0.6,anchor='center')
 
         log_out_button = Button(frame, width=14, pady=7, text='Log Out', bg='#57a1f8', fg='white', border=0, command=lambda : self.logout(menu_root))
         log_out_button.place(relx=0.1, rely=0.2, anchor='center')
@@ -344,6 +352,84 @@ class GUI():
         exit_button = Button(frame, width=39, pady=7, text='EXIT', bg='#57a1f8', fg='white', border=0 , command=lambda : self.exiting(upfw_root.master))
         exit_button.place(relx=0.5, rely=0.85, anchor='center')
 
+    def show_password_by_web_screen(self, username): #spbw -> shortcut
+        spbw_root=Toplevel()
+        spbw_root.title('show password by web')
+        spbw_root.geometry('925x500+300+200')
+        spbw_root.configure(bg="#fff")
+        spbw_root.resizable(False,False)
+
+        self.top_levels = spbw_root
+
+        frame = Frame(spbw_root,width=925, height=500 , bg="white")
+        frame.place(relx=0.5, rely=0.5, anchor='center')
+
+        heading = Label(frame,text='show password by web', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',23,'bold'))
+        heading.place(relx=0.5, rely=0.1, anchor='center')
+
+        account_msg = Label(frame,text=f'user: {username}', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',15))
+        account_msg.place(relx=0.1, rely=0.1, anchor='center')
+
+        web_name_label = Label(frame, text='Which website would you like to see the password for?', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',13))
+        web_name_label.place(relx=0.5, rely=0.3, anchor='center')
+
+        web_name = Entry(frame, width=25, fg='black', border=0, bg='white', font=('Microsoft YaHei UI Light', 11))
+        web_name.place(relx=0.5, rely=0.4, anchor='center')
+
+        #the line under web name
+        web_name_underline = Frame(frame,width=200, height=2, bg='black')
+        web_name_underline.place(relx=0.5, rely=0.43, anchor='center')
+
+        show_password_button = Button(frame, width=14, pady=7, text='Show Password', bg='#57a1f8', fg='white', border=0,
+                             command=lambda : self.show_password_by_web(username,web_name,spbw_root))
+        show_password_button.place(relx=0.5, rely=0.5, anchor='center')
+
+        log_out_button = Button(frame, width=14, pady=7, text='Log Out', bg='#57a1f8', fg='white', border=0, command=lambda : self.logout(spbw_root))
+        log_out_button.place(relx=0.1, rely=0.2, anchor='center')
+
+        exit_button = Button(frame, width=39, pady=7, text='EXIT', bg='#57a1f8', fg='white', border=0 , command=lambda : self.exiting(spbw_root.master))
+        exit_button.place(relx=0.5, rely=0.85, anchor='center')
+        pass
+    
+    def remove_web_and_password_screen(self, username): #rwp -> shortcut
+        rwp_root=Toplevel()
+        rwp_root.title('remove web and password')
+        rwp_root.geometry('925x500+300+200')
+        rwp_root.configure(bg="#fff")
+        rwp_root.resizable(False,False)
+
+        self.top_levels = rwp_root
+
+        frame = Frame(rwp_root,width=925, height=500 , bg="white")
+        frame.place(relx=0.5, rely=0.5, anchor='center')
+
+        heading = Label(frame,text='remove web and password', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',23,'bold'))
+        heading.place(relx=0.5, rely=0.1, anchor='center')
+
+        account_msg = Label(frame,text=f'user: {username}', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',15))
+        account_msg.place(relx=0.1, rely=0.1, anchor='center')
+
+        web_name_label = Label(frame, text='Which website would you like to remove?', fg='#57a1f8', bg='white', font=('Microsoft YaHei UI Light',13))
+        web_name_label.place(relx=0.5, rely=0.3, anchor='center')
+
+        web_name = Entry(frame, width=25, fg='black', border=0, bg='white', font=('Microsoft YaHei UI Light', 11))
+        web_name.place(relx=0.5, rely=0.4, anchor='center')
+
+        #the line under web name
+        web_name_underline = Frame(frame,width=200, height=2, bg='black')
+        web_name_underline.place(relx=0.5, rely=0.43, anchor='center')
+
+        remove_button = Button(frame, width=14, pady=7, text='remove web', bg='#57a1f8', fg='white', border=0,
+                             command=lambda : self.remove_web_and_password(username,web_name,rwp_root))
+        remove_button.place(relx=0.5, rely=0.5, anchor='center')
+
+        log_out_button = Button(frame, width=14, pady=7, text='Log Out', bg='#57a1f8', fg='white', border=0, command=lambda : self.logout(rwp_root))
+        log_out_button.place(relx=0.1, rely=0.2, anchor='center')
+
+        exit_button = Button(frame, width=39, pady=7, text='EXIT', bg='#57a1f8', fg='white', border=0 , command=lambda : self.exiting(rwp_root.master))
+        exit_button.place(relx=0.5, rely=0.85, anchor='center')
+        pass
+
     #endregion
 
     #region functions
@@ -363,8 +449,10 @@ class GUI():
         #בדיקה של משתמש
         if entered_username == 'Username' or entered_password == 'Password' or entered_username == '' or entered_password == '' : #קיים בטבלה- ממשיך הלאה
             messagebox.showerror('signup' , 'your username or password can not be the default username or password')
+            root.deiconify()
         elif "|||" in entered_username :
             messagebox.showerror('signup' , f'your username can not contain "|||"')
+            root.deiconify()
 
 
         else: #לא קיים בטבלה- מכניס לטבלה וממשיך הלאה
@@ -379,12 +467,12 @@ class GUI():
             server_message = self.client.messages  # 'ok' or 'problem'
             # self.client.messages = ""
 
-            if server_message =='ok':
+            if server_message.startswith('ok'):
                 messagebox.showinfo("signup", 'you are now in the system')
                 root.destroy()
 
 
-            if server_message =='problem':
+            if server_message.startswith('problem'):
                 messagebox.showinfo("signup", 'user name already exists')
                 root.deiconify()
 
@@ -395,8 +483,10 @@ class GUI():
         #בדיקה של משתמש
         if entered_username == 'Username' or entered_password == 'Password' or entered_username == '' or entered_password == '' : #קיים בטבלה- ממשיך הלאה
             messagebox.showerror('login' , 'your username or password can not be Username or Password or null')
+            root.deiconify()
         elif "|||" in entered_username :
             messagebox.showerror('login' , f'your username can not contain "|||"')
+            root.deiconify()
 
 
         else: #לבדוק האם זה נמצא בטבלת משתמשים, אם כן -> להכניס. אחרת -> לכתוב שהוא לא רשום
@@ -409,16 +499,16 @@ class GUI():
             while self.client.messages == "":
                 pass
             server_message = self.client.messages
-            if server_message =='ok':
+            if server_message.startswith('ok'):
                 messagebox.showinfo("login", 'you are now logged in')
                 root.destroy()
                 self.menu_screen(entered_username)
 
-            if server_message == 'problem':
+            if server_message.startswith('problem'):
                 messagebox.showinfo("login", 'your username or password was incorrect')
                 root.deiconify()
 
-            if server_message == 'not signed up':
+            if server_message.startswith('not signed up'):
                 messagebox.showinfo("login", 'your are not in the system, please sign up')
                 root.destroy()
 
@@ -436,8 +526,10 @@ class GUI():
 
         if entered_web == '' or entered_password == '':
             messagebox.showerror('Add web and password' , 'your web name or password can not be null')
+            root.deiconify()
         elif "|||" in entered_web :
             messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
+            root.deiconify()
         else:
             password_to_encrypt = entered_password
             encrypted_password = self.client.client_encryption.encrypt_msg(password_to_encrypt.encode(), self.client.server_public_key) #.decode()
@@ -448,12 +540,12 @@ class GUI():
             while self.client.messages == "":
                 pass
             server_message = self.client.messages
-            if server_message =='ok':
+            if server_message.startswith('ok'):
                 messagebox.showinfo("insert new web name and password", f'{entered_web} and password have been successfully added')
                 root.destroy()
                 self.menu_screen(username)
 
-            if server_message == 'problem':
+            if server_message.startswith('problem'):
                 messagebox.showinfo("insert new web name and password", f'{entered_web} already exists under your username')
                 root.deiconify()
 
@@ -464,8 +556,10 @@ class GUI():
 
         if entered_web == '' or entered_password == '' or entered_new_password == '':
             messagebox.showerror('Add web and password' , 'your web name or password can not be null')
+            root.deiconify()
         elif "|||" in entered_web :
             messagebox.showerror('Add web and password' , f'your web name can not contain "|||"')
+            root.deiconify()
         else:
             password_to_encrypt = entered_password
             encrypted_password = self.client.client_encryption.encrypt_msg(password_to_encrypt.encode(), self.client.server_public_key) #.decode()
@@ -477,26 +571,86 @@ class GUI():
             while self.client.messages == "":
                 pass
             server_message = self.client.messages
-            if server_message =='ok':
+            if server_message.startswith('ok'):
                 messagebox.showinfo("update password for web", f'Your password for {entered_web} has been updated')
                 root.destroy()
                 self.menu_screen(username)
 
-            if server_message == 'current password is wrong':
+            if server_message.startswith('current password is wrong'):
                 messagebox.showinfo("update password for web", 'Your current password was wrong')
                 root.deiconify()
             
-            if server_message == 'new password is the same as the current password':
+            if server_message.startswith('new password is the same as the current password'):
                 messagebox.showinfo("update password for web", 'Your new password is the same as the current password')
                 root.deiconify()
 
-            if server_message == 'web not exists':
+            if server_message.startswith('web not exists'):
                 messagebox.showinfo("update password for web", f'{entered_web} not exists under your username')
                 root.deiconify()
         pass
 
     def show_password_by_web (self, username, web_name, root):
+        entered_web = web_name.get()
+        if entered_web == '':
+            messagebox.showerror('Show password' , 'your web name can not be null')
+            root.deiconify()
+        elif "|||" in entered_web :
+            messagebox.showerror('Show password' , f'your web name can not contain "|||"')
+            root.deiconify()
+        else:
+            self.message = ['show password by web' , username, '', entered_web, '','']
+            self.client.messages = ""
+            self.client.send_message(self.message)
+            while self.client.messages == "":
+                pass
+            server_message = self.client.messages
+            if server_message.startswith('ok'):
+                encrypted_password = server_message[3:]
+                decrypted_password = self.client.client_encryption.decrypt_msg(eval(encrypted_password))
+                messagebox.showinfo("show password", f'Your password for {entered_web} is {decrypted_password}')
+                answer = messagebox.askquestion('show password', 'do you want to continue searching for another password for webs?')
+                if answer == 'yes':
+                    root.deiconify()
+                else:
+                    messagebox.showinfo('Return', 'Returning to the menu')
+                    root.destroy()
+                    self.menu_screen(username)
+
+            if server_message.startswith('web not exists'):
+                messagebox.showinfo("show password", f'{entered_web} not exists under your username')
+                root.deiconify()
         pass
+
+    def remove_web_and_password(self, username, web_name, root):
+        entered_web = web_name.get()
+        if entered_web == '':
+            messagebox.showerror('remove web and password' , 'your web name can not be null')
+            root.deiconify()
+        elif "|||" in entered_web :
+            messagebox.showerror('remove web and password' , f'your web name can not contain "|||"')
+            root.deiconify()
+        else:
+            answer = messagebox.askquestion('remove web and password', f'do you want to remove {entered_web} ?')
+            if answer == 'yes':
+                self.message = ['remove web and password' , username, '', entered_web, '','']
+                self.client.messages = ""
+                self.client.send_message(self.message)
+                while self.client.messages == "":
+                    pass
+                server_message = self.client.messages
+                if server_message.startswith('ok'):
+                    messagebox.showinfo("remove web and password", f'{entered_web} has been removed')
+                    root.destroy()
+                    self.menu_screen(username)
+
+                if server_message.startswith('web not exists'):
+                    messagebox.showinfo("remove web and password", f'{entered_web} not exists under your username')
+                    root.deiconify()
+            else:
+                messagebox.showinfo('reject', f'not removing {entered_web}')
+                root.deiconify()
+            
+
 
     #endregion
     
