@@ -153,7 +153,7 @@ class Server():
                             
                         if command == 'remove web and password':
                             print('remove web and password command')
-                            message = self.database.delete_web_and_password(username, web_name)
+                            message = self.database.remove_web_and_password(username, web_name)
                             print("OUTPUT: >>>>> " + str(message))
                             self.messages.append((message,client_addr,[current_socket]))
 

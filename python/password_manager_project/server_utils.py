@@ -242,7 +242,7 @@ class Database:
 
         return output_message
 
-    def delete_web_and_password(self,user_name, web_name):
+    def remove_web_and_password(self,user_name, web_name):
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         if self.check_user_to_web(user_name,web_name):
