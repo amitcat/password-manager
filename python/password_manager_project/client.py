@@ -2,8 +2,7 @@ import socket
 import select
 import threading
 from settings import *
-from server_utils import Encryption
-from cryptography.fernet import Fernet
+from Crypto.PublicKey import RSA
 
 
 
@@ -19,7 +18,6 @@ class MultiThreadedClient(threading.Thread):
         self.stop_flag = threading.Event() # Event to signal thread termination
         self.client_encryption = Encryption()
         self.server_public_key = ""
-        self.CIPHER = Fernet(self.client_encryption.key_for_password)
         
     
     def run(self):

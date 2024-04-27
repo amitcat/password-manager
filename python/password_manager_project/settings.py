@@ -2,7 +2,6 @@ SERVER_BUFFER_SIZE = 1024
 SERVER_IP = '0.0.0.0'
 SERVER_PORT = 5555
 
-from cryptography.fernet import Fernet
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 
@@ -11,7 +10,6 @@ class Encryption:
         self.key =RSA.generate(SERVER_BUFFER_SIZE)
         self.public_key = self.key.publickey()
         self.private_key = self.key
-        self.key_for_password = Fernet.generate_key()
     
     def export_public_key(self):
         return self.public_key.export_key()

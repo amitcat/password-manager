@@ -4,7 +4,6 @@ from client import MultiThreadedClient
 from settings import *
 import hashlib
 import random
-from cryptography.fernet import Fernet
 
 
 
@@ -15,10 +14,7 @@ class GUI():
         self.client = client
         self.top_levels = ""
         self.message = []
-        self.exit = False
-        self.KEY = Fernet.generate_key()
-        self.CIPHER_SUITE = Fernet(self.KEY)
-        
+        self.exit = False        
         
 
     #region Screens
