@@ -26,6 +26,18 @@ class Server():
         self.client_sockets = []
 
     def send_messages(self):
+        """
+        Sends messages to the receivers in the `self.messages` list.
+
+        This function iterates over the `self.messages` list and sends each message to the corresponding receivers.
+        It checks if the receiver is in the `self.wlist` before sending the message.
+
+        Parameters:
+        - None
+
+        Returns:
+        - None
+        """
         for message , client_addr, receivers in self.messages:
             for receiver in receivers:
                 if receiver in self.wlist:
@@ -64,10 +76,33 @@ class Server():
     #     cipher = self.encryption.encrypt(message, self.client_public_key[receiver])
     #     return cipher
     def format_message(self, message , receiver):
+        """
+        Encrypts the given message using the public key of the receiver and returns the encrypted message.
+
+        Args:
+            message (str): The message to be encrypted.
+            receiver (socket.socket): The socket object of the receiver.
+
+        Returns:
+            bytes: The encrypted message.
+        """
         cipher = self.encryption.encrypt_msg(message.encode(), self.client_public_key[receiver])
         return cipher
     
     def recvall(self, sock: socket.socket, size: int) -> bytes:
+        """
+        Receives all data from a socket until the specified size is reached.
+
+        Args:
+            sock (socket.socket): The socket to receive data from.
+            size (int): The total size of the data to be received.
+
+        Returns:
+            bytes: The received data as a bytes object.
+
+        Raises:
+            Exception: If an unexpected end of file (EOF) is encountered.
+        """
         received_chunks = []
         buf_size = 1024
         remaining = size
@@ -79,6 +114,7 @@ class Server():
             remaining -= len(received)
         return b''.join(received_chunks)
     def run(self):
+        
         while True:
             self.rlist, self.wlist, self.elist = select.select([self.server_socket] + self.client_sockets, self.client_sockets, [])
             
@@ -92,72 +128,76 @@ class Server():
                     self.client_public_key[client_addr] = RSA.import_key(client_conn.recv(self.server_buffer_size))
                     
                 else:
-                    if current_socket in self.rlist:
-                        length = int(current_socket.recv(8).decode())
-                        client_data = self.recvall(current_socket, length)
-                        decrypted_client_data = self.encryption.decrypt_msg(client_data)
-                        # print(f'DEBUG: {decrypted_client_data}')
-                        command , username , password , web_name , password_for_web ,new_password_for_web = decrypted_client_data.split("|||")
+                    try:
+                        if current_socket in self.rlist:
+                            recv_length = current_socket.recv(8)
+                            print(f'DEBUG 11111: {recv_length}')
+                            length = int(recv_length)
+                            client_data = self.recvall(current_socket, length)
+                            decrypted_client_data = self.encryption.decrypt_msg(client_data)
+                            # print(f'DEBUG: {decrypted_client_data}')
+                            command , username , password , web_name , password_for_web ,new_password_for_web = decrypted_client_data.split("|||")
 
-                        if command == 'exit':
-                            print(f'closing connection with {current_socket}')
-                            self.client_sockets.remove(current_socket)
-                            self.wlist.remove(current_socket)
-                            current_socket.close()
-                            break
+                            if command == 'exit':
+                                print(f'closing connection with {current_socket}')
+                                self.client_sockets.remove(current_socket)
+                                self.wlist.remove(current_socket)
+                                current_socket.close()
+                                break
 
-                        if command == 'signup':
-                            print('signup command')
-                            message = self.database.insert_user(username,password)
-                            print("OUTPUT: >>>>> " + str(message))
-                            self.messages.append((message,client_addr,[current_socket]))
-                            # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
-                            # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
-                            # current_socket.send(encrypted_message)
-                            
-                        if command == 'login':
-                            print('login command')
-                            message = self.database.login_into_the_system(username,password)
-                            print("OUTPUT: >>>>> " + str(message))
-                            # print('current sockeet',current_socket)
-                            # print('client addr',client_addr)
-                            self.messages.append((message,client_addr,[current_socket]))
-                            # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
-                            # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
-                            # current_socket.send(encrypted_message)
-                            
-                        if command == 'insert web and password':
-                            print('insert web name and password command')
-                            message = self.database.insert_web_name_and_password(username, web_name, password_for_web)
-                            print("OUTPUT: >>>>> " + str(message))
-                            self.messages.append((message,client_addr,[current_socket]))
-                            # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
-                            # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
-                            # current_socket.send(encrypted_message)
-                            
+                            if command == 'signup':
+                                print('signup command')
+                                message = self.database.insert_user(username,password)
+                                print("OUTPUT: >>>>> " + str(message))
+                                self.messages.append((message,client_addr,[current_socket]))
+                                # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
+                                # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
+                                # current_socket.send(encrypted_message)
+                                
+                            if command == 'login':
+                                print('login command')
+                                message = self.database.login_into_the_system(username,password)
+                                print("OUTPUT: >>>>> " + str(message))
+                                # print('current sockeet',current_socket)
+                                # print('client addr',client_addr)
+                                self.messages.append((message,client_addr,[current_socket]))
+                                # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
+                                # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
+                                # current_socket.send(encrypted_message)
+                                
+                            if command == 'insert web and password':
+                                print('insert web name and password command')
+                                message = self.database.insert_web_name_and_password(username, web_name, password_for_web)
+                                print("OUTPUT: >>>>> " + str(message))
+                                self.messages.append((message,client_addr,[current_socket]))
+                                # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
+                                # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
+                                # current_socket.send(encrypted_message)
+                                
 
-                        if command =='update password for web':
-                            print('update password for web command')
-                            message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.encryption)
-                            print("OUTPUT: >>>>> " + str(message))
-                            self.messages.append((message,client_addr,[current_socket]))
-                            # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
-                            # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
-                            # current_socket.send(encrypted_message)
+                            if command =='update password for web':
+                                print('update password for web command')
+                                message = self.database.update_password_for_web(username, web_name, password_for_web, new_password_for_web, self.encryption)
+                                print("OUTPUT: >>>>> " + str(message))
+                                self.messages.append((message,client_addr,[current_socket]))
+                                # self.messages.append((command , username , password , web_name , password_for_web ,new_password_for_web , [client_addr]))
+                                # encrypted_message = self.encryption.encrypt(message, self.client_public_key[client_addr])
+                                # current_socket.send(encrypted_message)
 
-                        if command =='show password by web':
-                            print('show password by web command')
-                            message = self.database.show_password_by_web(username, web_name, self.encryption, self.client_public_key[client_addr])
-                            print("OUTPUT: >>>>> " + str(message))
-                            self.messages.append((message,client_addr,[current_socket]))
-                            
-                        if command == 'remove web and password':
-                            print('remove web and password command')
-                            message = self.database.remove_web_and_password(username, web_name)
-                            print("OUTPUT: >>>>> " + str(message))
-                            self.messages.append((message,client_addr,[current_socket]))
+                            if command =='show password by web':
+                                print('show password by web command')
+                                message = self.database.show_password_by_web(username, web_name, self.encryption, self.client_public_key[client_addr])
+                                print("OUTPUT: >>>>> " + str(message))
+                                self.messages.append((message,client_addr,[current_socket]))
+                                
+                            if command == 'remove web and password':
+                                print('remove web and password command')
+                                message = self.database.remove_web_and_password(username, web_name)
+                                print("OUTPUT: >>>>> " + str(message))
+                                self.messages.append((message,client_addr,[current_socket]))
 
-                    else:
+                    except Exception as e:
+                        print(e)
                         print(f'closing connection with {current_socket}')
                         self.client_sockets.remove(current_socket)
                         self.wlist.remove(current_socket)

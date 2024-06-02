@@ -43,6 +43,7 @@ class MultiThreadedClient(threading.Thread):
         command = data[0]
         message = '|||'.join(data)
         encrypted_message = self.client_encryption.encrypt_msg(message.encode(), self.server_public_key)
+        print(str(len(encrypted_message)).zfill(8).encode())
         self.client_socket.send(str(len(encrypted_message)).zfill(8).encode())
         self.client_socket.sendall(encrypted_message)
         

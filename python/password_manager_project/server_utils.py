@@ -165,6 +165,7 @@ class Database:
         conn.close()
 
     def insert_web_name_and_password(self,user_name, web_name, password_for_web):
+        '''Inserts a new web name and password for a given user into the password table'''
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         # print(self.check_user_to_web(user_name,web_name)) >>> false
@@ -187,6 +188,7 @@ class Database:
         return output_message
 
     def update_password_for_web(self,user_name, web_name, current_password_for_web, new_password_for_web , encryption):
+        '''Updates the password for a given web name and user name in the password table'''
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         output_message =''
@@ -218,6 +220,7 @@ class Database:
         return output_message
 
     def show_password_by_web (self, user_name, web_name, encryption, client_public_key):
+        '''Retrieves the password associated with a specific web for a given user'''
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         output_message ='' # at the end output msg should be 'ok encrypted password' (enctypted with client public key)
@@ -243,6 +246,7 @@ class Database:
         return output_message
 
     def remove_web_and_password(self,user_name, web_name):
+        '''Removes a web and its corresponding password from the password table for a given user'''
         self.create_password_to_webs_table()
         conn, cursor = self.connect_to_db()
         if self.check_user_to_web(user_name,web_name):

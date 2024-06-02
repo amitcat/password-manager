@@ -20,6 +20,7 @@ class GUI():
     #region Screens
         
     def main_screen (self):
+        '''Initializes the main screen of the Pass Protector application'''
         root = Tk()
         root.title('Main page - Pass Protector')
         root.geometry('925x500+300+200')
@@ -39,6 +40,7 @@ class GUI():
         root.mainloop()
 
     def login_screen(self):
+        '''Creates a login screen with a form for users to enter their username and password'''
         login_root=Toplevel()
         login_root.title('Log in')
         login_root.geometry('925x500+300+200')
@@ -98,6 +100,7 @@ class GUI():
         exit_button.place(relx=0.5, rely=0.75, anchor='center')
 
     def signup_screen(self):
+        '''Creates a signup screen with username and password fields'''
         SignUp_root=Toplevel()
         SignUp_root.title('Sign up')
         SignUp_root.geometry('925x500+300+200')
@@ -172,6 +175,7 @@ class GUI():
         exit_button.place(relx=0.65, rely=0.6, anchor='center')
         
     def menu_screen(self, username):
+        '''Creates a menu screen for a given username'''
         menu_root=Toplevel()
         menu_root.title('menu')
         menu_root.geometry('925x500+300+200')
@@ -219,6 +223,7 @@ class GUI():
         exit_button.place(relx=0.5, rely=0.75, anchor='center')
 
     def insert_web_name_and_password_screen(self, username): #iwnp -> shortcut
+        '''Creates a new window for inserting a new web name and password for a given username'''
         iwnp_root=Toplevel()
         iwnp_root.title('insert new web name and password')
         iwnp_root.geometry('925x500+300+200')
@@ -280,6 +285,7 @@ class GUI():
         exit_button.place(relx=0.5, rely=0.75, anchor='center')
 
     def update_password_for_web_screen(self,username): #upfw -> shortcut
+        '''Create new screen for updates the password for a specific web account'''
         upfw_root=Toplevel()
         upfw_root.title('update password for web')
         upfw_root.geometry('925x500+300+200')
@@ -349,6 +355,7 @@ class GUI():
         exit_button.place(relx=0.5, rely=0.85, anchor='center')
 
     def show_password_by_web_screen(self, username): #spbw -> shortcut
+        '''Create new screen to show the password for a specific website'''
         spbw_root=Toplevel()
         spbw_root.title('show password by web')
         spbw_root.geometry('925x500+300+200')
@@ -388,6 +395,7 @@ class GUI():
         pass
     
     def remove_web_and_password_screen(self, username): #rwp -> shortcut
+        '''Create new screen for removing the web and password frome the password table for a given username'''
         rwp_root=Toplevel()
         rwp_root.title('remove web and password')
         rwp_root.geometry('925x500+300+200')
